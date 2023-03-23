@@ -117,7 +117,7 @@ def get_bigram_tf(tf_dic, words):
         tf_dic[(words[i], words[i+1])] = tf_dic.get((words[i], words[i+1]), 0) + 1
 
 # 计算二元模型信息熵
-def calculate_bigram_entropy(file_path):
+def calculate_bigram_entropy(file_path,flag):
     before = time.time()
 
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -133,17 +133,28 @@ def calculate_bigram_entropy(file_path):
     line_count = 0
     words_tf = {}
     bigram_tf = {}
+    if flag is False:
+        for line in corpus:
+            for x in jieba.cut(line):
+                split_words.append(x)
+                words_len += 1
 
-    for line in corpus:
-        for x in jieba.cut(line):
-            split_words.append(x)
-            words_len += 1
+            get_tf_2(words_tf, split_words)
+            get_bigram_tf(bigram_tf, split_words)
 
-        get_tf_2(words_tf, split_words)
-        get_bigram_tf(bigram_tf, split_words)
+            split_words = []
+            line_count += 1
+    elif flag is True:
+        for line in corpus:
+            for x in line:
+                split_words.append(x)
+                words_len += 1
 
-        split_words = []
-        line_count += 1
+            get_tf_2(words_tf, split_words)
+            get_bigram_tf(bigram_tf, split_words)
+
+            split_words = []
+            line_count += 1
 
     logging.info("语料库字数: %d" % count)
     logging.info("分词个数: %d" % words_len)
@@ -168,7 +179,7 @@ def calculate_bigram_entropy(file_path):
     return ['bigram', len(corpus), words_len, round(len(corpus) / words_len, 4), entropy, runtime]
 
 # 计算三元模型信息熵
-def calculate_trigram_entropy(file_path):
+def calculate_trigram_entropy(file_path,flag):
     before = time.time()
     with open(file_path, 'r', encoding='utf-8') as f:
         corpus = []
@@ -183,17 +194,28 @@ def calculate_trigram_entropy(file_path):
     line_count = 0
     words_tf = {}
     trigram_tf = {}
+    if flag is False:
+        for line in corpus:
+            for x in jieba.cut(line):
+                split_words.append(x)
+                words_len += 1
 
-    for line in corpus:
-        for x in jieba.cut(line):
-            split_words.append(x)
-            words_len += 1
+            get_bigram_tf(words_tf, split_words)
+            get_trigram_tf(trigram_tf, split_words)
 
-        get_bigram_tf(words_tf, split_words)
-        get_trigram_tf(trigram_tf, split_words)
+            split_words = []
+            line_count += 1
+    elif flag is True:
+        for line in corpus:
+            for x in line:
+                split_words.append(x)
+                words_len += 1
 
-        split_words = []
-        line_count += 1
+            get_bigram_tf(words_tf, split_words)
+            get_trigram_tf(trigram_tf, split_words)
+
+            split_words = []
+            line_count += 1
 
     logging.info("语料库字数: %d" % count)
     logging.info("分词个数: %d" % words_len)
@@ -218,7 +240,7 @@ def calculate_trigram_entropy(file_path):
     return ['trigram', len(corpus), words_len, round(len(corpus) / words_len, 4), entropy, runtime]
 
 
-def calculate_unigram_entropy(file_path):
+def calculate_unigram_entropy(file_path,flag):  # 计算一元模型信息熵
     before = time.time()
 
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -231,8 +253,10 @@ def calculate_unigram_entropy(file_path):
                 count += len(line.strip())
 
         corpus = ''.join(corpus)
-
-        split_words = [x for x in jieba.cut(corpus)]  # 利用jieba分词
+        if flag is False:
+            split_words = [x for x in jieba.cut(corpus)]  # 利用jieba分词
+        elif flag is True:
+            split_words = [x for x in corpus]
         words_len = len(split_words)
 
         logging.info("语料库字数: %d" % len(corpus))
@@ -251,22 +275,23 @@ def calculate_unigram_entropy(file_path):
 
     return ['unigram', len(corpus), words_len, round(len(corpus)/words_len, 4),  entropy, runtime]
 
-def Calculate_total_entropy(file_path):  # 计算全部的信息熵
+def Calculate_total_entropy(file_path,flag):  # 按词/词，计算全部的信息熵
     print("------------------------------------------------------------------------")
     # unigram
     data = []
-    item = calculate_unigram_entropy(file_path)
+    item = calculate_unigram_entropy(file_path, flag)
     data.append(item)
     # biggram
-    item = calculate_bigram_entropy(file_path)
+    item = calculate_bigram_entropy(file_path, flag)
     data.append(item)
     # trigram
-    item = calculate_trigram_entropy(file_path)
+    item = calculate_trigram_entropy(file_path, flag)
     data.append(item)
     # 平均信息熵
     entropy = [item[4] for item in data]
     logging.info(file_path+'----Average entropy: %.4f' % (sum(entropy) / len(entropy)))
     print("------------------------------------------------------------------------")
+
 
 def draw_results(data,novel_name,color,title,path):  # 画柱状图
     length = len(data)
@@ -274,8 +299,8 @@ def draw_results(data,novel_name,color,title,path):  # 画柱状图
     plt.figure(figsize=(12.96, 7.2))
     width = 0.6  # 单个柱状图的宽度
     x1 = x + width / 2  # 第一组数据柱状图横坐标起始位置
-    plt.title(title,fontsize=18)  # 柱状图标题
-    plt.ylabel("Bit per word",fontsize=15)  # 纵坐标label
+    plt.title(title, fontsize=18)  # 柱状图标题
+    plt.ylabel("Bit per word", fontsize=15)  # 纵坐标label
     plt.bar(x1, data, width=width, color=color)
     plt.xticks(x, novel_name, rotation=25, fontsize=12)
     for a, b in zip(x1, data):  # 柱子上的数字显示
