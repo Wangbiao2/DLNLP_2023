@@ -157,13 +157,12 @@ def calculate_bigram_entropy(file_path,flag):
             line_count += 1
 
     logging.info("语料库字数: %d" % count)
-    logging.info("分词个数: %d" % words_len)
-    logging.info("平均词长: %.4f" % round(count / words_len, 4))
-    logging.info("语料行数: %d" % line_count)
+
 
     bigram_len = sum([dic[1] for dic in bigram_tf.items()])
-    logging.info("二元模型长度: %d" % bigram_len)
-
+    logging.info("分词个数: %d" % bigram_len)
+    logging.info("平均词长: %.4f" % round(count / bigram_len, 4))
+    logging.info("语料行数: %d" % line_count)
     entropy = []
     for bi_word in bigram_tf.items():
         jp_xy = bi_word[1] / bigram_len  # 计算联合概率p(x,y)
@@ -218,12 +217,12 @@ def calculate_trigram_entropy(file_path,flag):
             line_count += 1
 
     logging.info("语料库字数: %d" % count)
-    logging.info("分词个数: %d" % words_len)
-    logging.info("平均词长: %.4f" % round(count / words_len, 4))
-    logging.info("语料行数: %d" % line_count)
+
 
     trigram_len = sum([dic[1] for dic in trigram_tf.items()])
-    logging.info("三元模型长度: %d" % trigram_len)
+    logging.info("分词个数: %d" % trigram_len)
+    logging.info("平均词长: %.4f" % round(count / trigram_len, 4))
+    logging.info("语料行数: %d" % line_count)
 
     entropy = []
     for tri_word in trigram_tf.items():

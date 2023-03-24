@@ -40,7 +40,6 @@ if __name__ == '__main__':
                ['novel_sentence_飞狐外传.txt'],
                ['novel_sentence_鸳鸯刀.txt'],
                ['novel_sentence_鹿鼎记.txt']]
-    '''
     for i, name in enumerate(my_file):  # 判断每本小说的语料文件是否存在
         if os.path.exists(name[0]) is False:  # 若存在，则不重复处理
             print(name[0] + '----------->' + 'does not exist')
@@ -57,7 +56,6 @@ if __name__ == '__main__':
     print('*******************************************************************')
     for j, file_name in enumerate(my_file):
         Calculate_total_entropy(file_name[0], flag=True)
-    '''
     # 画图,采用预先记录的数据
     data_1_gram_word = [14.3238,12.4196,12.9941,12.6135,13.2114,13.4500,13.2815,11.1289,13.0251,12.8229,13.0726,10.0099,12.3949,12.1144,12.8401,10.9532,13.0667]
     data_2_gram_word = [5.3787,1.4006,3.5019,3.1879,3.9723,3.9611,3.9054,2.3833,3.4451,4.1433,3.9301,1.5652,2.8637,2.5544,3.3577,1.7207,4.1419]
